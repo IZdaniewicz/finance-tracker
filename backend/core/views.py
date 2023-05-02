@@ -1,16 +1,23 @@
 from json import JSONDecodeError
 
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
 from django.http import JsonResponse
 from rest_framework import views, status
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.authtoken.models import Token
 from rest_framework.parsers import JSONParser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import Account, Transaction
-from .serializers import AccountSerializer, TransactionSerializer
+from .serializers import AccountSerializer, TransactionSerializer, UserSerializer
 
 
 class AccountAPIView(views.APIView):
     serializer_class = AccountSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get_serializer_context(self):
         return {
@@ -33,6 +40,10 @@ class AccountAPIView(views.APIView):
     def post(self, request):
         try:
             data = JSONParser().parse(request)
+            user_id = int(data["user"])
+            user = User.objects.get(pk=user_id)
+            if len(Account.objects.filter(user=user)) > 0:
+                return JsonResponse({"result": "error", "message": "User already has account"}, status=409)
             serializer = AccountSerializer(data=data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
@@ -43,7 +54,7 @@ class AccountAPIView(views.APIView):
             return JsonResponse({"result": "error", "message": "Json decoding error"}, status=400)
 
 
-def GetAccountById(request, account_id):
+def get_account_by_id(request, account_id):
     try:
         account = Account.objects.get(pk=account_id)
         data = {
@@ -112,7 +123,7 @@ class TransactionAPIView(views.APIView):
             return JsonResponse({'error': f'Transaction with id={transaction_id} does not exist.'}, status=404)
 
 
-def GetTransactionById(request, transaction_id):
+def get_transaction_by_id(request, transaction_id):
     try:
         transaction = Transaction.objects.get(pk=transaction_id)
         data = {
@@ -127,7 +138,7 @@ def GetTransactionById(request, transaction_id):
         return JsonResponse({'error': f'Transaction with id={transaction_id} does not exist.'}, status=404)
 
 
-def GetAllTransactionByAccountId(request, account_id):
+def get_all_transaction_by_account_id(request, account_id):
     transactions = Transaction.objects.filter(account_id=account_id)
     if len(transactions) < 1:
         return JsonResponse({'error': f'Transactions for account_id={account_id} does not exist.'}, status=404)
@@ -135,7 +146,7 @@ def GetAllTransactionByAccountId(request, account_id):
     return JsonResponse(serializer.data, safe=False)
 
 
-def GetAllTransactionByDay(request, day):
+def get_all_transaction_by_day(request, day):
     transactions = Transaction.objects.filter(data__month=day)
     if len(transactions) < 1:
         return JsonResponse({'error': f'Transactions for day={day} does not exist.'}, status=404)
@@ -143,10 +154,36 @@ def GetAllTransactionByDay(request, day):
     return JsonResponse(serializer.data, safe=False)
 
 
-def GetAllTransactionByMonth(request, month):
+def get_all_transaction_by_month(request, month):
     transactions = Transaction.objects.filter(data__month=month)
     if len(transactions) < 1:
         return JsonResponse({'error': f'Transactions for month={month} does not exist.'}, status=404)
 
     serializer = TransactionSerializer(transactions, many=True)
     return JsonResponse(serializer.data, safe=False)
+
+
+class LogoutView(APIView):
+    authentication_classes = [SessionAuthentication]
+
+    def post(self, request):
+        request.session.flush()
+        return Response({"detail": "Logged out successfully."})
+
+
+class RegisterUserView(APIView):
+    parser_classes = [JSONParser]
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            password = request.data.get('password')
+            hashed_password = make_password(password)
+            user = serializer.save(password=hashed_password)
+            account_serializer = AccountSerializer(
+                data={'user': user.id, 'current_money': request.data.get('current_money', 0)})
+            if account_serializer.is_valid():
+                account_serializer.save()
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

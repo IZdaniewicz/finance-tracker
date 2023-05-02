@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -7,11 +8,11 @@ class Account(models.Model):
         app_label = "core"
 
     id = models.BigAutoField(primary_key=True)
-    user = models.CharField(default="user", max_length=20)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     current_money = models.FloatField(default=0)
 
     def __str__(self):
-        return f'{self.user}'
+        return f'{self.user.name} account: {self.current_money}'
 
 
 class Transaction(models.Model):

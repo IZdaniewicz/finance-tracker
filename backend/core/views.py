@@ -3,6 +3,7 @@ from json import JSONDecodeError
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.http import JsonResponse
+from rest_framework import generics
 from rest_framework import views, status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.authtoken.models import Token
@@ -11,8 +12,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Account, Transaction
-from .serializers import AccountSerializer, TransactionSerializer, UserSerializer
+from .models import Account, Transaction, FinancialGoal, Spending
+from .serializers import AccountSerializer, TransactionSerializer, UserSerializer, FinancialGoalSerializer, \
+    SpendingSerializer
 
 
 class AccountAPIView(views.APIView):
@@ -187,3 +189,79 @@ class RegisterUserView(APIView):
             token, _ = Token.objects.get_or_create(user=user)
             return Response({'token': token.key})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FinancialGoalListCreateView(generics.ListCreateAPIView):
+    queryset = FinancialGoal.objects.all()
+    serializer_class = FinancialGoalSerializer
+    parser_classes = [JSONParser]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FinancialGoalRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = FinancialGoal.objects.all()
+    serializer_class = FinancialGoalSerializer
+    parser_classes = [JSONParser]
+
+    def get(self, request, *args, **kwargs):
+        goal = self.get_object()
+        transactions = goal.get_all_goal_transactions()
+        serializer = TransactionSerializer(transactions, many=True)
+        return Response(serializer.data)
+
+    def put(self, request, *args, **kwargs):
+        goal = self.get_object()
+        serializer = self.serializer_class(goal, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs):
+        goal = self.get_object()
+        goal.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class SpendingListCreateView(generics.ListCreateAPIView):
+    queryset = Spending.objects.all()
+    serializer_class = SpendingSerializer
+    parser_classes = [JSONParser]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SpendingListRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = FinancialGoal.objects.all()
+    serializer_class = FinancialGoalSerializer
+    parser_classes = [JSONParser]
+
+    def get(self, request, *args, **kwargs):
+        goal = self.get_object()
+        transactions = goal.get_all_goal_transactions()
+        serializer = TransactionSerializer(transactions, many=True)
+        return Response(serializer.data)
+
+    def put(self, request, *args, **kwargs):
+        goal = self.get_object()
+        serializer = self.serializer_class(goal, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs):
+        goal = self.get_object()
+        goal.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

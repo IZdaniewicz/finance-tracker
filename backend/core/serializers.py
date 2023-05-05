@@ -42,3 +42,15 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'password')
         extra_kwargs = {'password': {'write_only': True}}
+
+
+class FinancialGoalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.FinancialGoal
+        fields = ('description', 'label', 'goal_money')
+
+
+class SpendingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Spending
+        fields = ('description', 'label', 'goal_money', 'to_go_date')

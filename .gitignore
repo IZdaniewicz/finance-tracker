@@ -1,5 +1,6 @@
-/backend/venv/
-.idea
-__pycache__/
-.node_modules
 public
+.idea
+.node_modules
+node_modules
+__pycache__/
+/backend/venv/

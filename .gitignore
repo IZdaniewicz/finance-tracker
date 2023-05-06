@@ -1,5 +1,5 @@
 /backend/venv/
 .idea
-__pycache__
-node_modules
-/frontend/public/
+__pycache__/
+.node_modules
+public

@@ -1,0 +1,15 @@
+// customize theme variables
+//$secondary: indigo;
+//$base-padding: 1rem;
+//$base-border-thickness: 3px;
+$primary: black;
+$secondary: wheat;
+
+body > * {
+    color: $secondary;
+    background-color: $primary;
+    border: 2px solid $secondary;
+    border-radius: 20px;
+}
+@import 'standard-library/lib';
+

@@ -7,8 +7,7 @@
   "scripts": {
     "watch:html": "node src/htmlTracking.js",
     "watch:sass": "sass  --no-source-map --watch src/sass:public/css",
-    "purge": "purgecss --css public/css/*.css --content public/*.html --output public/css/*.min.css",
-    "watch": "npm-run-all --parallel watch:* purge",
+    "watch": "npm-run-all --parallel watch:*",
     "serve": "browser-sync start --server public --files public",
     "start": "npm-run-all --parallel watch serve",
     "postbuild": "postcss public/css/*.css -u autoprefixer cssnano -r --no-map"

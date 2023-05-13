@@ -1,8 +1,25 @@
 const fs = require('fs');
-var i = 0;
+const path = require('path');
+
+const sourceDir = './src';
+const destinationDir = './public';
+
+fs.readdir(sourceDir, (err, files) => {
+  if (err) throw err;
+
+  files.filter(file => path.extname(file) === '.html')
+    .forEach(file => {
+      const sourcePath = path.join(sourceDir, file);
+      const destinationPath = path.join(destinationDir, file);
+      
+      fs.copyFile(sourcePath, destinationPath, err => {
+        if (err) throw err;
+        console.log(`${file} copied to ${destinationDir}`);
+      });
+    });
+});
+
 fs.watch('./src/', (eventType, filename) => {
-    // console.log(`${i}->${filename}:${eventType} out!\n`);
-    // i++;
     if (filename.endsWith('.html') && eventType === 'change') {
         fs.copyFile(`./src/${filename}`, `./public/${filename}`,
             (err) => {

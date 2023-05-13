@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Bootstrap Website</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+    />
+    <link
+    rel="stylesheet"
+    href="/css/page1.css"
+  />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container">
+        <a class="navbar-brand" href="#">FinanceTracker</a>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="/index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/page1.html">Transactions</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/login.html">Settings</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    
+
+    <!-- Header -->
+    <header class="bg-dark text-white py-5">
+      <div class="container">
+        <h1>Witaj w FinanceTracker</h1>
+        <p class="lead"></p>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="py-5">
+      <!-- Add finance form -->
+      <div class="container mt-5">
+        <h2>Add Record</h2>
+        <form class="form-inline">
+          <div class="form-group mr-3">
+            <label for="amount" class="mr-2">Amount:</label>
+            <input
+              type="number"
+              class="form-control"
+              id="amount"
+              name="amount"
+              placeholder="Enter amount"
+              required
+            />
+          </div>
+          <div class="form-group mr-3">
+            <label for="description" class="mr-2">Description:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="description"
+              name="description"
+              placeholder="Enter description"
+              required
+            />
+          </div>
+          <div class="form-group mr-3">
+            <label for="tag" class="mr-2">Tag:</label>
+            <select class="form-control" id="tag" name="tag" required>
+              <option value="">Select a tag</option>
+              <option value="food">Food</option>
+              <option value="transportation">Transportation</option>
+              <option value="shopping">Shopping</option>
+            </select>
+          </div>
+          <div class="form-group mr-3">
+            <label for="date" class="mr-2">Date:</label>
+            <input
+              type="date"
+              class="form-control"
+              id="date"
+              name="date"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary mt-4">Add Record</button>
+        </form>
+      </div>
+      <!-- Financial data table -->
+      <div class="container mt-5">
+        <h2>Wydatki:</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Amount</th>
+              <th scope="col">Description</th>
+              <th scope="col">Date</th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>$100</td>
+              <td>Example expense</td>
+              <td>2022-05-01</td>
+              <td>
+                <button type="button" class="btn btn-danger">Usuń</button>
+              </td>
+              <td>
+                <button type="button" class="btn btn-primary">Modyfikuj</button>
+              </td>
+            </tr>
+            <tr>
+              <td>$50</td>
+              <td>Example income</td>
+              <td>2022-05-02</td>
+              <td>
+                <button type="button" class="btn btn-danger">Usuń</button>
+              </td>
+              <td>
+                <button type="button" class="btn btn-primary">Modyfikuj</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+    </main>
+
+    <!-- Link to Bootstrap JavaScript files -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

@@ -89,7 +89,7 @@ class Spending(models.Model):
     finished = models.BooleanField(default=False)
     goal_money = models.FloatField()
     current_money = models.FloatField(default=0)
-    to_go_date = models.DateTimeField()
+    to_go_date = models.DateTimeField('%Y-%m-%d')
 
     def get_all_goal_transactions(self):
         try:

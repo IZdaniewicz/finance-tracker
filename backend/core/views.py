@@ -213,7 +213,7 @@ class FinancialGoalRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVi
         goal = self.get_object()
         transactions = goal.get_all_goal_transactions()
         serializer = TransactionSerializer(transactions, many=True)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data, safe=False)
 
     def put(self, request, *args, **kwargs):
         goal = self.get_object()
@@ -251,7 +251,7 @@ class SpendingListRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVie
         goal = self.get_object()
         transactions = goal.get_all_goal_transactions()
         serializer = TransactionSerializer(transactions, many=True)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data, safe=False)
 
     def put(self, request, *args, **kwargs):
         goal = self.get_object()

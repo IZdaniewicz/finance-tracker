@@ -12,17 +12,17 @@ export default function NavBar()
           >
             <ul className="navbar-nav">
               <li className="nav-item">
-                <a className="nav-link" href="/index.html">
+                <a className="nav-link" href="/">
                   Home
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="/page1.html">
+                <a className="nav-link" href="/transactions">
                   Transactions
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="/login.html">
+                <a className="nav-link" href="/login">
                   Settings
                 </a>
               </li>

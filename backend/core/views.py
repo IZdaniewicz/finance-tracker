@@ -2,6 +2,7 @@ from json import JSONDecodeError
 
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from rest_framework import generics
 from rest_framework import views, status
@@ -40,20 +41,13 @@ class AccountAPIView(views.APIView):
         return JsonResponse(serializer.data, safe=False)
 
     def post(self, request):
-        try:
-            data = JSONParser().parse(request)
-            user_id = int(data["user"])
-            user = User.objects.get(pk=user_id)
-            if len(Account.objects.filter(user=user)) > 0:
-                return JsonResponse({"result": "error", "message": "User already has account"}, status=409)
-            serializer = AccountSerializer(data=data)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                return JsonResponse(serializer.data, safe=False)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except JSONDecodeError:
-            return JsonResponse({"result": "error", "message": "Json decoding error"}, status=400)
+        data = JSONParser().parse(request)
+        serializer = AccountSerializer(data=data)
+        if serializer.is_valid(raise_exception=False):
+            serializer.save()
+            return JsonResponse(serializer.data, safe=False)
+        else:
+            return JsonResponse(serializer.errors, status=400)
 
 
 def get_account_by_id(request, account_id):

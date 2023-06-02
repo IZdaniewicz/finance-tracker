@@ -5,3 +5,4 @@ node_modules
 Backend/Backend/obj
 /backend/backend/bin/Debug/net6.0
 /backend/.vs/Backend/FileContentIndex
+/backend/.vs/Backend/DesignTimeBuild

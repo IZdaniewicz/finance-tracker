@@ -1,6 +1,11 @@
+public
 .idea
 .node_modules
 node_modules
-__pycache__/
-/backend/venv/
-standard-library
+Backend/Backend/obj
+/backend/backend/bin/Debug/net6.0
+/backend/.vs/Backend/FileContentIndex
+/backend/.vs/Backend/DesignTimeBuild
+/backend/.vs/Backend
+/backend/.vs/ProjectEvaluation
+

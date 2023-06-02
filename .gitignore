@@ -2,5 +2,6 @@ public
 .idea
 .node_modules
 node_modules
-__pycache__/
-/backend/venv/
+Backend/Backend/obj
+/backend/backend/bin/Debug/net6.0
+/backend/.vs/Backend/FileContentIndex

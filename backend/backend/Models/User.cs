@@ -1,24 +1,15 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Backend.Models;
 
 public class User
 {
-    [Column("id")]
     public int Id { get; set; }
-    
-    [Column("username")]
     public string Username { get; set; }
-    [Column("password")]
     public string Password { get; set; }
+    [JsonIgnore]
+    public virtual Account Account { get; set; }
 
-    public User()
-    {
-    }
-    public User(string username,string password)
-    {
-        this.Username = username;
-        this.Password = password;
-    }
-}
+}   

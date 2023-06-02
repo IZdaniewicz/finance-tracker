@@ -1,47 +1,78 @@
+using Backend.Migrations;
 using Backend.Models;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
-namespace Backend.Repositories;
-
-public class UserRepository : IUserRepository
+namespace Backend.Repositories
 {
-    private readonly DataContext _dbContext;
-
-    public UserRepository(DataContext dbContext)
+    public interface IUserRepository
     {
-        _dbContext = dbContext;
+        Task AddAsync(User u);
+        Task DeleteAsync(User u);
+        Task<User> FindByIdAsync(int id);
+        Task<User> FindByUsernameAsync(string username);
+        Task<List<User>> GetAllAsync();
+        Task UpdateAsync(User u);
+        Task<User> GetLoggedUserAsync(HttpRequest request);
     }
 
-    public void Add(User u)
+    public class UserRepository : IUserRepository
     {
-        _dbContext.Users.Add(u);
-        _dbContext.SaveChanges();
-    }
+        private readonly DataContext _dbContext;
 
-    public IEnumerable<User> GetAll()
-    {
-        return _dbContext.Users.ToList();
-    }
+        public UserRepository(DataContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
 
-    public User FindById(int id)
-    {
-        return _dbContext.Users.Find(id);
-    }
+        public async Task AddAsync(User u)
+        {
+            await _dbContext.Users.AddAsync(u);
+            await _dbContext.SaveChangesAsync();
+        }
 
-    public User FindByUsername(string username)
-    {
-        return _dbContext.Users.Single(user => user.Username == username);
-    }
+        public async Task<List<User>> GetAllAsync()
+        {
+            return await _dbContext.Users.Include(u => u.Account).ToListAsync();
+        }
 
-    public void Update(User u)
-    {
-        _dbContext.Users.Update(u);
-        _dbContext.SaveChanges();
-    }
+        public async Task<User> FindByIdAsync(int id)
+        {
+            return await _dbContext.Users.Include(u => u.Account).FirstOrDefaultAsync(u => u.Id == id);
+        }
 
-    public void Delete(User u)
-    {
-        _dbContext.Users.Remove(u);
-        _dbContext.SaveChanges();
+        public async Task<User> FindByUsernameAsync(string username)
+        {
+            return await _dbContext.Users.Include(u => u.Account).SingleOrDefaultAsync(u => u.Username == username);
+        }
+
+        public async Task UpdateAsync(User u)
+        {
+            _dbContext.Users.Update(u);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(User u)
+        {
+            _dbContext.Users.Remove(u);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<User> GetLoggedUserAsync(HttpRequest request)
+        {
+
+            string authorizationHeader = request.Headers["Authorization"];
+            var token = authorizationHeader.Substring("Bearer ".Length).Trim();
+            var handler = new JwtSecurityTokenHandler();
+            var tokenRead = handler.ReadJwtToken(token);
+            var username = tokenRead.Claims.FirstOrDefault(c => c.Type == "Username")?.Value;
+
+            return await _dbContext.Users.Include(u=>u.Account).FirstOrDefaultAsync(u => u.Username == username);
+        }
     }
 }
